@@ -1,101 +1,105 @@
-import 'package:flutter/material.dart'; //importing this package because I want to use it
+import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'viewmodels/factor_viewmodel.dart';
+import 'viewmodels/flash_card_viewmodel.dart';
+import 'views/main_navigation_screen.dart';
 
-void main() {//main function
-  runApp(//run app
-    MaterialApp( //Wrapping it in MaterialApp
-      home: FactorApp(),
-    ),
-  );
+void main() {
+  runApp(const FactorApp());
 }
 
-
-class FactorApp extends StatefulWidget {
+class FactorApp extends StatelessWidget {
   const FactorApp({super.key});
-// `FactorApp` is a StatefulWidget because it changes over time
-  @override
-  State<FactorApp> createState()  => _FactorAppState();  // `createState` creates an instance of `_FactorAppState` to manage state
-}
-
-class _FactorAppState extends State<FactorApp> {// `_FactorAppState` holds the state for `FactorApp`
-  final TextEditingController _controller = TextEditingController(); // `TextEditingController` is used to retrieve the value from the TextField
-  List<int> _factors = [];  // `_factors` stores the list of calculated factors based on the user's input.
-
-
-//Function to calculate factors of the number inserted
-  void _calculateFactors() {
-    int num = int.tryParse(_controller.text) ?? 0;
-    if (num <= 0) {
-      setState(() {
-        _factors = [];
-      });
-      return;
-    }
-
-    List<int> factors = [];
-    for (int i = 1; i <= num; i++) {
-      if (num % i == 0) {
-        factors.add(i);
-      }
-    }
-
-    setState(() {
-      _factors = factors;
-    });
-  }
 
   @override
   Widget build(BuildContext context) {
-    // `Scaffold` provides the basic structure for the app's visual interface
-    return Scaffold(
-      // `AppBar` is the top navigation bar of the app
-      appBar: AppBar(   title: Text('Factor Finder')), // Title of the app shown in the AppBar
-      body: LayoutBuilder( // Responsive widget to adapt to different screen sizes
-        builder: (context,constraints){
-      return Padding(
-        padding: const EdgeInsets.all(16.0), // 16-pixel padding on all sides
-        child: Column(
-          mainAxisSize: MainAxisSize.min, // Use minimum space for the column
-          children: [
-            // `TextField` allows the user to input a number
-            TextField(
-              controller: _controller, // Controller to manage input value
-              keyboardType: TextInputType.number, // Keyboard for numeric input
-              decoration: InputDecoration(
-                labelText: 'Enter a number',
-                // Placeholder text in the input field
-                border: OutlineInputBorder(), // Adds a border around the input field
-              ),
+    return MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (_) => FactorViewModel()),
+        ChangeNotifierProvider(create: (_) => FlashCardViewModel()),
+      ],
+      child: MaterialApp(
+        title: 'Factor Finder & Times Tables',
+        debugShowCheckedModeBanner: false,
+        themeMode: ThemeMode.system,
+        theme: ThemeData(
+          useMaterial3: true,
+          colorScheme: ColorScheme.fromSeed(
+            seedColor: const Color(0xFF6366F1),
+            brightness: Brightness.light,
+          ),
+          scaffoldBackgroundColor: const Color(0xFFF8FAFC),
+          appBarTheme: const AppBarTheme(
+            centerTitle: true,
+            elevation: 0,
+            backgroundColor: Colors.transparent,
+          ),
+          cardTheme: CardThemeData(
+            elevation: 1.5,
+            shadowColor: Colors.black12,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(16),
             ),
-            SizedBox(height: 20), // Adds vertical spacing of 20 pixels
-            // `ElevatedButton` creates a button with elevated style
-            ElevatedButton(
-              onPressed: _calculateFactors,
-              // Calls `_calculateFactors()` when pressed
-              child: Text('Find Factors'), // Text on the button
+          ),
+          inputDecorationTheme: InputDecorationTheme(
+            filled: true,
+            fillColor: Colors.white,
+            contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(16),
+              borderSide: BorderSide.none,
             ),
-            SizedBox(height: 20), // Adds vertical spacing of 20 pixels
-            // If `_factors` list is empty, display a message
-            _factors.isEmpty
-                ? Text(
-                'No factors to display.') // Message when there are no factors
-                : Expanded( // `Expanded` makes the list take available space
-              // `ListView.builder` creates a scrollable list
-              child: ListView.builder(
-                itemCount: _factors.length, // Number of items in the list
-                itemBuilder: (context, index) {
-                  return ListTile(
-                    title: Text(
-                      _factors[index]
-                          .toString(), // Display each factor as a list item
-                    )
-                  );
-                },
-              ),
+            enabledBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(16),
+              borderSide: const BorderSide(color: Color(0xFFE2E8F0), width: 1.5),
             ),
-          ],
+            focusedBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(16),
+              borderSide: const BorderSide(color: Color(0xFF6366F1), width: 2.0),
+            ),
+            errorBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(16),
+              borderSide: const BorderSide(color: Color(0xFFEF4444), width: 1.5),
+            ),
+          ),
         ),
-      );
-        },
+        darkTheme: ThemeData(
+          useMaterial3: true,
+          colorScheme: ColorScheme.fromSeed(
+            seedColor: const Color(0xFF818CF8),
+            brightness: Brightness.dark,
+          ),
+          scaffoldBackgroundColor: const Color(0xFF0F172A),
+          appBarTheme: const AppBarTheme(
+            centerTitle: true,
+            elevation: 0,
+            backgroundColor: Colors.transparent,
+          ),
+          cardTheme: CardThemeData(
+            elevation: 1.5,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(16),
+            ),
+          ),
+          inputDecorationTheme: InputDecorationTheme(
+            filled: true,
+            fillColor: const Color(0xFF1E293B),
+            contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(16),
+              borderSide: BorderSide.none,
+            ),
+            enabledBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(16),
+              borderSide: const BorderSide(color: Color(0xFF334155), width: 1.5),
+            ),
+            focusedBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(16),
+              borderSide: const BorderSide(color: Color(0xFF818CF8), width: 2.0),
+            ),
+          ),
+        ),
+        home: const MainNavigationScreen(),
       ),
     );
   }
